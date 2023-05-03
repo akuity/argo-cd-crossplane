@@ -1,0 +1,14 @@
+apiVersion: storage.gcp.upbound.io/v1beta1
+kind: Bucket
+metadata:
+  name: guestbook-ui
+  labels:
+  annotations:
+    crossplane.io/external-name: # globally unique bucket name
+spec:
+  forProvider:
+    location: US
+    storageClass: MULTI_REGIONAL
+  providerConfigRef:
+    name: default
+  deletionPolicy: Delete

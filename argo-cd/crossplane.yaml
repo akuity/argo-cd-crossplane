@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/akuity/argo-cd-crossplane
+    targetRevision: HEAD
+    path: crossplane
+  destination:
+    namespace: crossplane
+    name: gke
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - kind: Secret
+      name: gcp-secret
+      jsonPointers:
+        - '.data.creds'

@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crossplane-system
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: 'https://charts.crossplane.io/stable'
+    targetRevision: 1.11.3
+    chart: crossplane
+  destination:
+    namespace: crossplane-system
+    name: gke
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      # - ServerSideApply=true  # Can't use with ignoreDifferences?
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - '.spec.template.spec.initContainers[]?.env[]?.valueFrom.resourceFieldRef.divisor'
